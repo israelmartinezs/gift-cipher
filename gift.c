@@ -1,6 +1,20 @@
 /*codigo por Israel Martinez*/
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+#include <inttypes.h>
+uint64_t textoplano = 0x1234123412341234;
+uint64_t permutacion(uint64_t * texto){
+	uint64_t salida=0;
+	uint64_t mascaras[]={0x0008000400020001,0x0001000800040002,0x0002000100080004,0x0004000200010008};
+	
+
+
+
+}
+
+
+
 unsigned char GSbox[]={0x1,0xa,0x4,0xc,0x6,0xf,0x3,0x9,0x2,0xd,0xb,0x7,0x5,0x0,0x8,0xe};
 unsigned char plainText[]={'H','o','l','a','c','o','m','o'};
 unsigned char cadena[]={
@@ -68,11 +82,12 @@ unsigned char * GS(unsigned char * texto){
 }
 unsigned char * PermBits(unsigned char * state){
 	int indice=0;
-	for (int i = 0; i < 8; i++)
+	unsigned char* salida;
+	for (int i = 0; i < 8; i++)//cadena[]
 	{
 		for (int j = 0; j < 8; ++j)
 		{
-			
+			// i9
 
 		}
 	}
@@ -86,7 +101,15 @@ int main(int argc, char const *argv[])
 	int i=0;
 	//imprimeCadena(plainText);
 	//imprimeCadenaHex(cadena);
-	printf("%x\n",(0x4<<4)^0x1);
+	printf("%"PRIx64"\n",textoplano );
+	imprimeCadenaHex(plainText);
+	(*plainText+0)^(0x1);
+	imprimeCadenaHex(plainText);
+	(*plainText+0)|(0x1);
+	imprimeCadenaHex(plainText);
+	printf("%x\n",plainText[0] );
+	printf("%x\n",(*plainText+0) & (0x0<<3));
+	//printf("%x\n",(0x4<<4)^0x1);
 	GS(plainText);
 	imprimeCadena(plainText);
 	//pruebaregresaNumero();
