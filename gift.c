@@ -4,16 +4,22 @@
 #include <stdint.h>
 #include <inttypes.h>
 uint64_t textoplano = 0x1234123412341234;
-uint64_t mascaras[]= {0x4000100000400001,0x8000200000800002,0x1000400000100004,0x2000800000200008};
-uint64_t mascaras2[]={0x0004200008000020,0x0008400001000040,0x0002100004000010,0x0001800002000080}
+uint64_t mascaras[]= {0x4000010000400001,0x8000020000800002,0x1000040000100004,0x2000080000200008};
+uint64_t mascaras2[]={0x0004200008000020,0x0008400001000040,0x0002100004000010,0x0001800002000080};
+uint64_t mascaras3[]={0x0080000210000400,0x0010000420000800,0x0040000180000200,0x0020000840000100};
+uint64_t mascaras4[]={0x0200008000021000,0x0100004000018000,0x0400001000042000,0x0800002000084000};
+
 uint64_t permutacion(uint64_t * texto){
 	uint64_t salida=0;
 	uint64_t aux1=0, aux2=0,aux3=0 aux4=0;
 	uint64_t aux5=0, aux6=0,aux7=0 aux8=0;
+	uint64_t aux9=0, aux10=0,aux11=0 aux12=0;
+	uint64_t aux13=0, aux14=0,aux15=0 aux16=0;
 
 	aux^=((*texto) &  mascaras[0]); aux2^=((*texto) &  mascaras[1]); aux3^=((*texto)& mascaras[2]); aux4^=((*texto)&mascaras[3]);
-	aux5^=((*texto) &  mascaras[0]); aux6^=((*texto) &  mascaras[1]); aux7^=((*texto)& mascaras[2]); aux8^=((*texto)&mascaras[3]);
-
+	aux5^=((*texto) &  mascaras2[0]); aux6^=((*texto) &  mascaras2[1]); aux7^=((*texto)& mascaras2[2]); aux8^=((*texto)&mascaras2[3]);
+	aux9^=((*texto) &  mascaras3[0]); aux10^=((*texto) &  mascaras3[1]); aux11^=((*texto)& mascaras3[2]); aux12^=((*texto)&mascaras3[3]);
+	aux13^=((*texto) &  mascaras4[0]); aux14^=((*texto) &  mascaras4[1]); aux15^=((*texto)& mascaras3[2]); aux16^=((*texto)&mascaras4[3]);
 	//uint64_t mascaras[]={0x0008000400020001,0x0001000800040002,0x0002000100080004,0x0004000200010008};
 	return aux;
 
