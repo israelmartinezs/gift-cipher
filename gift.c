@@ -21,6 +21,10 @@ uint64_t permutacion(uint64_t * texto){
 	aux9^=((*texto) &  mascaras3[0]); aux10^=((*texto) &  mascaras3[1]); aux11^=((*texto)& mascaras3[2]); aux12^=((*texto)&mascaras3[3]);
 	aux13^=((*texto) &  mascaras4[0]); aux14^=((*texto) &  mascaras4[1]); aux15^=((*texto)& mascaras3[2]); aux16^=((*texto)&mascaras4[3]);
 	//uint64_t mascaras[]={0x0008000400020001,0x0001000800040002,0x0002000100080004,0x0004000200010008};
+	uint64_t ref=0;
+	salida^=aux;	ref=aux2;	salida^=((aux2<<16)^(ref>>48));	ref=aux3;	salida^=((aux3<<32)^(ref>>32))	
+
+
 	return aux;
 
 
