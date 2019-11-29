@@ -4,10 +4,18 @@
 #include <stdint.h>
 #include <inttypes.h>
 uint64_t textoplano = 0x1234123412341234;
+uint64_t mascaras[]= {0x4000100000400001,0x8000200000800002,0x1000400000100004,0x2000800000200008};
+uint64_t mascaras2[]={0x0004200008000020,0x0008400001000040,0x0002100004000010,0x0001800002000080}
 uint64_t permutacion(uint64_t * texto){
 	uint64_t salida=0;
-	uint64_t mascaras[]={0x0008000400020001,0x0001000800040002,0x0002000100080004,0x0004000200010008};
-	
+	uint64_t aux1=0, aux2=0,aux3=0 aux4=0;
+	uint64_t aux5=0, aux6=0,aux7=0 aux8=0;
+
+	aux^=((*texto) &  mascaras[0]); aux2^=((*texto) &  mascaras[1]); aux3^=((*texto)& mascaras[2]); aux4^=((*texto)&mascaras[3]);
+	aux5^=((*texto) &  mascaras[0]); aux6^=((*texto) &  mascaras[1]); aux7^=((*texto)& mascaras[2]); aux8^=((*texto)&mascaras[3]);
+
+	//uint64_t mascaras[]={0x0008000400020001,0x0001000800040002,0x0002000100080004,0x0004000200010008};
+	return aux;
 
 
 
@@ -101,7 +109,9 @@ int main(int argc, char const *argv[])
 	int i=0;
 	//imprimeCadena(plainText);
 	//imprimeCadenaHex(cadena);
-	printf("%"PRIx64"\n",textoplano );
+	unsigned char ar=0xa>>4;
+	///printf("%x\n",ar );
+	printf("%"PRIx64"\n",permutacion(&textoplano) );
 	imprimeCadenaHex(plainText);
 	(*plainText+0)^(0x1);
 	imprimeCadenaHex(plainText);
