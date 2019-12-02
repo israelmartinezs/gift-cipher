@@ -10,22 +10,49 @@ uint64_t mascaras3[]={0x0080000210000400,0x0010000420000800,0x0040000180000200,0
 uint64_t mascaras4[]={0x0200008000021000,0x0100004000018000,0x0400001000042000,0x0800002000084000};
 
 uint64_t permutacion(uint64_t * texto){
-	uint64_t salida=0;
-	uint64_t aux1=0, aux2=0,aux3=0 aux4=0;
-	uint64_t aux5=0, aux6=0,aux7=0 aux8=0;
-	uint64_t aux9=0, aux10=0,aux11=0 aux12=0;
-	uint64_t aux13=0, aux14=0,aux15=0 aux16=0;
+	char binario[70];
 
-	aux^=((*texto) &  mascaras[0]); aux2^=((*texto) &  mascaras[1]); aux3^=((*texto)& mascaras[2]); aux4^=((*texto)&mascaras[3]);
+	uint64_t salida=0;
+	uint64_t aux1=0, aux2=0,aux3=0, aux4=0;
+	uint64_t aux5=0, aux6=0,aux7=0, aux8=0;
+	uint64_t aux9=0, aux10=0,aux11=0, aux12=0;
+	uint64_t aux13=0, aux14=0,aux15=0, aux16=0;
+
+	uint64_t aux21=0, aux22=0,aux23=0, aux24=0;
+	uint64_t aux25=0, aux26=0,aux27=0, aux28=0;
+	uint64_t aux29=0, aux210=0,aux211=0, aux212=0;
+	uint64_t aux213=0, aux214=0,aux215=0, aux216=0;
+
+	aux1^=((*texto) &  mascaras[0]); aux2^=((*texto) &  mascaras[1]); aux3^=((*texto)& mascaras[2]); aux4^=((*texto)&mascaras[3]);
 	aux5^=((*texto) &  mascaras2[0]); aux6^=((*texto) &  mascaras2[1]); aux7^=((*texto)& mascaras2[2]); aux8^=((*texto)&mascaras2[3]);
 	aux9^=((*texto) &  mascaras3[0]); aux10^=((*texto) &  mascaras3[1]); aux11^=((*texto)& mascaras3[2]); aux12^=((*texto)&mascaras3[3]);
 	aux13^=((*texto) &  mascaras4[0]); aux14^=((*texto) &  mascaras4[1]); aux15^=((*texto)& mascaras3[2]); aux16^=((*texto)&mascaras4[3]);
 	//uint64_t mascaras[]={0x0008000400020001,0x0001000800040002,0x0002000100080004,0x0004000200010008};
 	uint64_t ref=0;
-	salida^=aux;	ref=aux2;	salida^=((aux2<<16)^(ref>>48));	ref=aux3;	salida^=((aux3<<32)^(ref>>32))	
+	aux21=aux1;
+	ref=aux2;	aux22=((aux2<<16)^(ref>>48));
+	ref=aux3;	aux23=((aux3<<32)^(ref>>32)); 
+	ref=aux4;	aux24=((aux4<<48)^(ref>>16));
+	ref=aux5;	aux25=((aux5<<60)^(ref>>4)); 
+	ref=aux6;	aux26=((aux6<<12)^(ref>>52));
+	ref=aux7;	aux27=((aux7<<44)^(ref>>20));
+	ref=aux8;	aux28=((aux8<<28)^(ref>>36));
+	ref=aux9;	aux29=((aux9<<56)^(ref>>8));
+	ref=aux10;	aux210=((aux10<<8)^(ref>>56));
+	ref=aux11;	aux211=((aux11<<40)^(ref>>24));       
+	ref=aux12;	aux212=((aux12<<24)^(ref>>40));
+	ref=aux13;	aux213=((aux13<<4)^(ref>>60));
+	ref=aux14;	aux214=((aux14<<52)^(ref>>12));
+	ref=aux15;	aux215=((aux15<<20)^(ref>>44));    
+	ref=aux16;	aux216=((aux16<<36)^(ref>>28)); 
+	//printf("hola%"PRIx64"\n",aux216 );
+	salida=aux21^aux22^aux23^aux24^aux25^aux26^aux27^aux28^aux29^aux210^aux211^aux212^aux213^aux214^aux215^aux216;
+	printf("hola%"PRIx64"\n",salida );
+	
+	
 
 
-	return aux;
+	return aux1;
 
 
 
@@ -136,3 +163,7 @@ int main(int argc, char const *argv[])
 	//printf("%d\n",sizeof(plainText) );
 	return 0;
 }
+
+
+
+//juan.perezmar@issste.gob.mx
