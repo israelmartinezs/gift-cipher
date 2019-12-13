@@ -3,16 +3,20 @@
 #include <string.h>
 #include <stdint.h>
 #include <inttypes.h>
+typedef unsigned __int128 uint128_t;
+uint64_t key=0x1231123212331234;
+uint64_t key2=0x1235123612371238;
 uint64_t textoplano = 0x1234123412341234;
 uint64_t mascaras[]= {0x4000010000400001,0x8000020000800002,0x1000040000100004,0x2000080000200008};
 uint64_t mascaras2[]={0x0004200008000020,0x0008400001000040,0x0002100004000010,0x0001800002000080};
 uint64_t mascaras3[]={0x0080000210000400,0x0010000420000800,0x0040000180000200,0x0020000840000100};
 uint64_t mascaras4[]={0x0200008000021000,0x0100004000018000,0x0400001000042000,0x0800002000084000};
+//uint32_t key={0x12341234};
 
 uint64_t permutacion(uint64_t * texto){
 	char binario[70];
 
-	uint64_t salida=0;
+	uint64_t salida=0; 
 	uint64_t aux1=0, aux2=0,aux3=0, aux4=0;
 	uint64_t aux5=0, aux6=0,aux7=0, aux8=0;
 	uint64_t aux9=0, aux10=0,aux11=0, aux12=0;
@@ -260,17 +264,69 @@ unsigned char * PermBits(unsigned char * state){
 
 
 */
+uint8_t constantes[]={0x01,0x03,0x07,0x0f,0x1f,0x3e,0x3d,0x3b,
+					0x37,0x2f,0x1e,0x3c,0x39,0x33,0x27,
+					0x0e,0x1d,0x3a,0x35,0x2b,0x16,0x2c,
+					0x18,0x30,0x21,0x02,0x05,0x0b};
+uint16_t mascasKey[]={0x0001,0x0002,0x0004,0x0008,0x0010,0x0020,0x0040,0x0080,0x0100,0x0200,0x0400,0x0800,0x1000,0x2000,0x4000,0x8000};
+uint64_t xorData(uint64_t * state, uint32_t * stateKey ){
+	uint32_t u32=(0xffff0000 & (*stateKey));
+	uint16_t u=u32>>16;
+	uint16_t v=0x0000ffff & (*stateKey);
+	uint64_t llaveCompleta=0;
+	uint64_t bitEncontradou=0;
+	uint64_t bitEncontradov=0;
+	uint64_t constanteCompleta=0x8000000000000000;
+	uint64_t constanteEncontrada=0;
+	int i=0;
+	int a=3;
+	for(i=0; i<16; i++){
+		bitEncontradou=mascasKey[i]&u;
+		bitEncontradov=mascasKey[i]&v;
+		bitEncontradou=bitEncontradou<<((4*i)+1);
+		bitEncontradov=bitEncontradov<<(4*i);
+		//printf("bitEncontradou %016llx \n",bitEncontradou);
+		//printf("bitEncontradov %016llx \n",bitEncontradov);
+		llaveCompleta=llaveCompleta^bitEncontradou^bitEncontradov;
+		//mascasKey[0]+=0x1;
+		//printf("creacion de la llave: %016llx \n", llaveCompleta );
+	}
+	for (int i = 0; i < 6; ++i)
+	{
+			constanteEncontrada=mascasKey[i]&constantes[0];
+			constanteCompleta=constanteCompleta^(constanteEncontrada<<a);
+			a+=4;
+			//printf("constanteComplet: %016llx\n",constanteCompleta );
+	}
+	llaveCompleta=llaveCompleta^constanteCompleta;
+	printf("creacion de la llave: %016llx \n", llaveCompleta );
+	//uint32_t mascasKey[];
+
+	//printf("%016llx \n",0x00a40+0x2 );
+	//printf("stateKey: %016llx \n",*stateKey );
+	//printf("U %016llx \n",u );
+	//printf("V %016llx \n",v);
+
+	return 0;
+}
 int main(int argc, char const *argv[])
 {
 	int i=0;
 	//imprimeCadena(plainText);
 	//imprimeCadenaHex(cadena);
-	unsigned char ar=0xa>>4;
+	//unsigned char ar=0xa>>4;
 	///printf("%x\n",ar );
+	//printf("%d\n", sizeof(uint64_t) );
+	//printf("%d\n", sizeof(char));
+	//printf("Key: %032lln \n",key );
 	uint64_t salidapermutacion=permutacion(&textoplano);
 	printf("permutacion: %016llx\n", salidapermutacion );
 	uint64_t salidaPermutacionInversa=despermutacion(&salidapermutacion);
 	printf("salidaPermutacionInversa: %016llx\n", salidaPermutacionInversa);
+	printf("\n");
+	uint32_t cacho=0xffffffff & key;
+	printf("cacho: %016llx \n", cacho );
+	uint64_t as=xorData(&salidapermutacion,&cacho);
 	//printf("permutacionin: %"PRIx64"\n",despermutacion(&textoplano) );
 	//imprimeCadenaHex(plainText);
 	//(*plainText+0)^(0x1);
@@ -292,3 +348,4 @@ int main(int argc, char const *argv[])
 //juan.perezmar@issste.gob.mx
 //3233440431112222
 //3233440431012222
+
