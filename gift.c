@@ -35,17 +35,17 @@ uint64_t permutacion(uint64_t * texto){
 	//printf("salida: %016llx \n",aux7 );
 	uint64_t ref=0;
 	aux21=aux1;
-	ref=aux2 & 0xffff000000000000;	aux22=((aux2<<16)^(ref>>48));
-	ref=aux3 & 0xffffffff00000000;	aux23=((aux3<<32)^(ref>>32)); 
-	ref=aux4 & 0xffffffffffff0000;	aux24=((aux4<<48)^(ref>>16));
-	ref=aux5 & 0xfffffffffffffff0;	aux25=((aux5<<60)^(ref>>4)); ////
-	ref=aux6 & 0xfff0000000000000;	aux26=((aux6<<12)^(ref>>52));
-	ref=aux7 & 0xfffffffffff00000;	aux27=((aux7<<44)^(ref>>20));
-	ref=aux8 & 0xfffffff000000000;	aux28=((aux8<<28)^(ref>>36));
-	ref=aux9 & 0xffffffffffffff00;	aux29=((aux9<<56)^(ref>>8));
+	ref=aux2 &  0xffff000000000000;	aux22=((aux2<<16)^(ref>>48));
+	ref=aux3 &  0xffffffff00000000;	aux23=((aux3<<32)^(ref>>32)); 
+	ref=aux4 &  0xffffffffffff0000;	aux24=((aux4<<48)^(ref>>16));
+	ref=aux5 &  0xfffffffffffffff0;	aux25=((aux5<<60)^(ref>>4)); ////
+	ref=aux6 &  0xfff0000000000000;	aux26=((aux6<<12)^(ref>>52));
+	ref=aux7 &  0xfffffffffff00000;	aux27=((aux7<<44)^(ref>>20));
+	ref=aux8 &  0xfffffff000000000;	aux28=((aux8<<28)^(ref>>36));
+	ref=aux9 &  0xffffffffffffff00;	aux29=((aux9<<56)^(ref>>8));
 	ref=aux10 & 0xff00000000000000;	aux210=((aux10<<8)^(ref>>56));
 	ref=aux11 & 0xffffffffff000000;	aux211=((aux11<<40)^(ref>>24));       
-	ref=aux12 & 0xffffffff00000000;	aux212=((aux12<<24)^(ref>>40));
+	ref=aux12 & 0xffffff0000000000;	aux212=((aux12<<24)^(ref>>40));
 	ref=aux13 & 0xf000000000000000;	aux213=((aux13<<4)^(ref>>60));
 	ref=aux14 & 0xfffffffffffff000;	aux214=((aux14<<52)^(ref>>12));
 	ref=aux15 & 0xfffff00000000000;	aux215=((aux15<<20)^(ref>>44));    
@@ -96,9 +96,9 @@ uint64_t despermutacion (uint64_t* texto){
 	uint64_t aux213=0, aux214=0,aux215=0, aux216=0;
 	uint64_t ref=0;
 	aux21=aux1;
-	ref=mascaras[1] & 0xffff000000000000;	mascaras[1]=((mascaras[1]<<16)^(ref>>48));
-	ref=mascaras[2] & 0xffffffff00000000;	mascaras[2]=((mascaras[2]<<32)^(ref>>32)); 
-	ref=mascaras[3] & 0xffffffffffff0000;	mascaras[3]=((mascaras[3]<<48)^(ref>>16));
+	ref=mascaras[1] &  0xffff000000000000;	mascaras[1]=((mascaras[1]<<16)^(ref>>48));
+	ref=mascaras[2] &  0xffffffff00000000;	mascaras[2]=((mascaras[2]<<32)^(ref>>32)); 
+	ref=mascaras[3] &  0xffffffffffff0000;	mascaras[3]=((mascaras[3]<<48)^(ref>>16));
 	ref=mascaras2[0] & 0xfffffffffffffff0;	mascaras2[0]=((mascaras2[0]<<60)^(ref>>4)); ////
 	ref=mascaras2[1] & 0xfff0000000000000;	mascaras2[1]=((mascaras2[1]<<12)^(ref>>52));
 	ref=mascaras2[2] & 0xfffffffffff00000;	mascaras2[2]=((mascaras2[2]<<44)^(ref>>20));
@@ -106,7 +106,7 @@ uint64_t despermutacion (uint64_t* texto){
 	ref=mascaras3[0] & 0xffffffffffffff00;	mascaras3[0]=((mascaras3[0]<<56)^(ref>>8));
 	ref=mascaras3[1] & 0xff00000000000000;	mascaras3[1]=((mascaras3[1]<<8)^(ref>>56));
 	ref=mascaras3[2] & 0xffffffffff000000;	mascaras3[2]=((mascaras3[2]<<40)^(ref>>24));       
-	ref=mascaras3[3] & 0xffffffff00000000;	mascaras3[3]=((mascaras3[3]<<24)^(ref>>40));
+	ref=mascaras3[3] & 0xffffff0000000000;	mascaras3[3]=((mascaras3[3]<<24)^(ref>>40));
 	ref=mascaras4[0] & 0xf000000000000000;	mascaras4[0]=((mascaras4[0]<<4)^(ref>>60));
 	ref=mascaras4[1] & 0xfffffffffffff000;	mascaras4[1]=((mascaras4[1]<<52)^(ref>>12));
 	ref=mascaras4[2] & 0xfffff00000000000;	mascaras4[2]=((mascaras4[2]<<20)^(ref>>44));    
@@ -274,7 +274,52 @@ unsigned char * GSINV(unsigned char * texto){
 	//texto=salida;
 
 }
-uint64_t * GSx(uint64_t)
+uint64_t  GSx(uint64_t * texto){
+	int i=0;
+	uint64_t mascara=0x0f;
+	uint64_t salida=0;
+	char obtenido=0;
+	uint64_t anadir;
+	for (i = 0; i < 16; ++i)
+		{
+			//printf("%d\n",i );
+			//printf("%016llx\n",mascara<<(4*i) );
+			//printf("%016llx\n",((mascara<<(4*i))&(*texto))>>(4*i) );
+			obtenido=((mascara<<(4*i))&(*texto))>>(4*i) ;
+			//printf("1 %016llx\n",obtenido );
+			obtenido=GSbox[obtenido];
+			anadir=obtenido;
+			//printf("2 %016llx\n",obtenido );
+			//printf("por meter: %016llx\n",anadir<<(4*i) );
+			salida=salida^(anadir<<(4*i));
+			//printf("salida: %016llx\n",salida );
+		}
+		//printf("salida: %016llx\n",salida );
+	return salida;
+}
+uint64_t  GSxinv(uint64_t * texto){
+	int i=0;
+	uint64_t mascara=0x0f;
+	uint64_t salida=0;
+	char obtenido=0;
+	uint64_t anadir;
+	for (i = 0; i < 16; ++i)
+		{
+			//printf("%d\n",i );
+			//printf("%016llx\n",mascara<<(4*i) );
+			//printf("%016llx\n",((mascara<<(4*i))&(*texto))>>(4*i) );
+			obtenido=((mascara<<(4*i))&(*texto))>>(4*i) ;
+			//printf("1 %016llx\n",obtenido );
+			obtenido=GSInversa[obtenido];
+			anadir=obtenido;
+			//printf("2 %016llx\n",obtenido );
+			//printf("por meter: %016llx\n",anadir<<(4*i) );
+			salida=salida^(anadir<<(4*i));
+			//printf("salida: %016llx\n",salida );
+		}
+		//printf("salida: %016llx\n",salida );
+	return salida;
+}
 unsigned char * PermBits(unsigned char * state){
 	int indice=0;
 	unsigned char* salida;
@@ -370,21 +415,51 @@ int main(int argc, char const *argv[])
 		//printf("\n");
 
 	}
-	for (int i = 0; i < 18; ++i)
+	printf("prueba GS\n");
+	textoplano=GSx(&textoplano);
+	printf("%016llx\n", textoplano );
+	textoplano=GSxinv(&textoplano);
+	printf("%016llx\n", textoplano );
+	printf("prueba keys\n");
+	textoplano=textoplano^Keys[0];
+	printf("%016llx\n", textoplano );
+	textoplano=textoplano^Keys[0];
+	printf("%016llx\n", textoplano );
+	printf("prueba permutacion\n");
+	textoplano=permutacion(&textoplano);
+	printf("%019llx\n", textoplano );
+	textoplano=despermutacion(&textoplano);
+	printf("%020lx\n", textoplano );
+	printf("\n");
+	for (int i = 0; i < 1; ++i)
 	{
-		//printf("texto plano: %s\n", plainText );
-		GS(textoplano);
-		//printf("texto GS %s\n",plainText );
+		//printf("texto plano: %016llx\n", textoplano );
+		textoplano=GSx(&textoplano);
+		printf("texto GS %016llx\n",textoplano );
 		uint64_t salidapermutacion=permutacion(&textoplano);
-		//printf("permutacion: %016llx\n", salidapermutacion );
+		printf("permutacion: %016llx\n", salidapermutacion );
 		//uint64_t salidaPermutacionInversa=despermutacion(&salidapermutacion);
 		//printf("salidaPermutacionInversa: %016llx\n", salidaPermutacionInversa);
 		textoplano=salidapermutacion^Keys[i];
+		printf("cifrado %016llx \n",textoplano );
+		//printf("%016llx \n", Keys[i]);
 
 	}
-	printf("texto Cifrado: %s \n",plainText);
+	printf("texto Cifrado: %016llx \n",textoplano);
+	printf("\n");
 
-
+	for (int i =1 ; i>0; --i)
+	{
+		//printf("%017llx \n", Keys[i-1] );
+		//printf("%d\n",i-1 );
+		textoplano=textoplano^Keys[i-1];
+		printf("cifrado %016llx \n",textoplano );
+		textoplano=despermutacion(&textoplano);
+		printf("permutacion %016llx \n", textoplano );
+		textoplano=GSxinv(&textoplano);
+		printf("texto GS %016llx\n",textoplano );
+	}
+	printf("texto descifrado: %016llx \n",textoplano );
 	//imprimeCadena(plainText);
 	//imprimeCadenaHex(cadena);
 	//unsigned char ar=0xa>>4;
