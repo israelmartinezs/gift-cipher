@@ -416,9 +416,41 @@ uint64_t xorData(uint32_t * stateKey, uint8_t  constantes){
 
 	return llaveCompleta;
 }
+unsigned char twe=0x0f;
 int main(int argc, char const *argv[])
-{
+{	
+	uint64_t mas=0x01;
+	uint64_t tweF=0;
+	uint64_t tweA=0;
+	unsigned char twe0=0x01&twe;
+	unsigned char twe1=(0x02&twe)>>1;
+	unsigned char twe2=(0x03&twe)>>2;
+	unsigned char twe3=(0x08&twe)>>3;
+	unsigned char twex=twe0^twe1^twe2^twe3;
+	unsigned char twese=0;
+	uint64_t au=0;
+	twese=twe;
+	//printf("%016llx \n",twese );
+	twese^=(twex^twe0)<<4;
+	twese^=(twex^twe1)<<5;
+	twese^=(twex^twe2)<<6;
+	twese^=(twex^twe3)<<7;
+	//printf("%016llx \n",twe1 );
+	printf("twe %016llx\n",twese );
+	for (int i = 0; i < 2; ++i)
+	{
+		tweF^=twese<<(i*8);
+	}
+	printf("%016llx \n",tweF );
+	for (int i = 0; i < 15; ++i)
+	{
+		au=(tweF&mas)>>i;
+		tweA^=au<<((4*i)+2);
+		mas=mas<<1;
+	}
+	printf("twe salida %016llx \n", tweA );
 	uint64_t Keys[28];
+
 	int i=0;
 	for (int i = 0; i < 28; ++i)
 	{
@@ -502,7 +534,9 @@ int main(int argc, char const *argv[])
 	printf("%016llx\n", textoplano );
 	printf("\n");
 	*/
-	for (int i = 0; i < 29; ++i)
+
+	
+	for (int i = 0; i < 28; ++i)
 	{
 		//printf("texto plano: %016llx\n", textoplano );
 		textoplano=GSx(&textoplano);
@@ -512,6 +546,11 @@ int main(int argc, char const *argv[])
 		//uint64_t salidaPermutacionInversa=despermutacion(&salidapermutacion);
 		//printf("salidaPermutacionInversa: %016llx\n", salidaPermutacionInversa);
 		textoplano=salidapermutacion^Keys[i];
+		if (((i+1)%4)==0 && i!=27)
+		{
+			printf("%d\n",i );
+			textoplano=textoplano^tweA;
+		}
 		printf("cifrado %016llx \n",textoplano );
 		//printf("%016llx \n", Keys[i]);
 
@@ -519,21 +558,27 @@ int main(int argc, char const *argv[])
 	printf("texto Cifrado: %016llx \n",textoplano);
 	printf("\n");
 
-	for (int i =28 ; i>=0; --i)
+	for (int i =27 ; i>=0; --i)
 	{
 		//printf("%017llx \n", Keys[i-1] );
 		//printf("%d\n",i-1 );
+		if (i!=27 && ((i+1)%4==0))
+		{
+			printf("%d\n",i );
+			textoplano=textoplano^tweA;
+		}
 		textoplano=textoplano^Keys[i];
 		printf("cifrado %016llx \n",textoplano );
 		textoplano=despermutacion(&textoplano);
 		printf("permutacion %016llx \n", textoplano );
 		textoplano=GSxinv(&textoplano);
+		
 		printf("texto GS %016llx\n",textoplano );
 	}
 	printf("\n");
 	printf("texto descifrado: %016llx \n",textoplano );
 
-
+	
 
 	printf("\n" );
 	//imprimeCadena(plainText);
