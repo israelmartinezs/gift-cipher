@@ -390,6 +390,10 @@ uint64_t xorData(uint32_t * stateKey, uint8_t  constantes){
 	for(i=0; i<16; i++){
 		bitEncontradou=mascasKey[i]&u;
 		bitEncontradov=mascasKey[i]&v;
+		bitEncontradou=bitEncontradou>>i;
+		bitEncontradov=bitEncontradov>>i;
+		//printf("bitEncontradou %016llx \n",bitEncontradou);
+
 		bitEncontradou=bitEncontradou<<((4*i)+1);
 		bitEncontradov=bitEncontradov<<(4*i);
 		//printf("bitEncontradou %016llx \n",bitEncontradou);
@@ -401,10 +405,12 @@ uint64_t xorData(uint32_t * stateKey, uint8_t  constantes){
 	for (int i = 0; i < 6; ++i)
 	{
 			constanteEncontrada=mascasKey[i]&constantes;
+			constanteEncontrada=constanteEncontrada>>i;
 			constanteCompleta=constanteCompleta^(constanteEncontrada<<a);
 			a+=4;
 			//printf("constanteComplet: %016llx\n",constanteCompleta );
 	}
+	//printf("llave sin constantes %016llx \n",llaveCompleta  );
 	llaveCompleta=llaveCompleta^constanteCompleta;
 	//printf("creacion de la llave: %016llx \n", llaveCompleta );
 	//uint32_t mascasKey[];
@@ -416,7 +422,7 @@ uint64_t xorData(uint32_t * stateKey, uint8_t  constantes){
 
 	return llaveCompleta;
 }
-unsigned char twe=0x0f;
+unsigned char twe=0x00;
 int main(int argc, char const *argv[])
 {	
 	uint64_t mas=0x01;
@@ -436,7 +442,7 @@ int main(int argc, char const *argv[])
 	twese^=(twex^twe2)<<6;
 	twese^=(twex^twe3)<<7;
 	//printf("%016llx \n",twe1 );
-	printf("twe %016llx\n",twese );
+	//printf("twe %016llx\n",twese );
 	for (int i = 0; i < 2; ++i)
 	{
 		tweF^=twese<<(i*8);
@@ -448,7 +454,7 @@ int main(int argc, char const *argv[])
 		tweA^=au<<((4*i)+2);
 		mas=mas<<1;
 	}
-	printf("twe salida %016llx \n", tweA );
+	//printf("twe salida %016llx \n", tweA );
 	uint64_t Keys[28];
 
 	int i=0;
@@ -477,10 +483,13 @@ int main(int argc, char const *argv[])
 		key2^=(corridou<<48)^(corridov<<32);
 		//printf("key salida %016llx \n",key);
 		//printf("key2 salida %016llx \n", key2 );
-		//printf("llave creada: %d %016llx \n",i,Keys[i] );
+		//p//rintf("llave creada: %d %016llx \n",i,Keys[i] );
 		//printf("\n");
 
 	}
+
+
+
 	/*
 	printf("prueba permutacion\n");
 	textoplano=permutacion(&textoplano);
@@ -552,12 +561,14 @@ int main(int argc, char const *argv[])
 			textoplano=textoplano^tweA;
 		}
 		printf("cifrado %016llx \n",textoplano );
-		//printf("%016llx \n", Keys[i]);
-
+		printf("llave: %016llx \n", Keys[i]);
+		printf("\n");
+		printf("texto Cifrado: %016llx \n",textoplano);
 	}
+	printf("\n");
 	printf("texto Cifrado: %016llx \n",textoplano);
 	printf("\n");
-
+/*
 	for (int i =27 ; i>=0; --i)
 	{
 		//printf("%017llx \n", Keys[i-1] );
@@ -578,7 +589,7 @@ int main(int argc, char const *argv[])
 	printf("\n");
 	printf("texto descifrado: %016llx \n",textoplano );
 
-	
+	*/
 
 	printf("\n" );
 	//imprimeCadena(plainText);
