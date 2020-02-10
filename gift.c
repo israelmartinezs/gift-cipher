@@ -19,6 +19,11 @@ uint64_t mascaras4[]={0x0200008000021000,0x0100004000018000,0x0400001000042000,0
 
 //uint32_t key={0x12341234};
 
+
+
+
+
+
 uint64_t permutacion(uint64_t * texto){
 	char binario[70];
 
@@ -423,26 +428,81 @@ uint64_t xorData(uint32_t * stateKey, uint8_t  constantes){
 	return llaveCompleta;
 }
 unsigned char twe=0x00;
-int main(int argc, char const *argv[])
-{	
-	uint64_t mas=0x01;
+/*
+
+int encript( uint64_t texto, uint64_t * textocifrado, unsigned char twek, uint64_t key, uint64_t key2, uint64_t * Keys){
+
+
+}
+*/
+int genKey(uint64_t key, uint64_t key2, uint64_t * Keys){
+		for (int i = 0; i < 28; ++i)
+	{
+		uint32_t cacho=0xffffffff & key;
+		Keys[i]=xorData(&cacho,constantes[i]);/////
+		uint32_t u32=(0xffff0000 & (cacho));
+		uint16_t u=u32>>16; uint16_t copiau=u;
+		uint16_t v=0x0000ffff & (cacho); uint16_t copiav=v;
+		uint64_t corridou=0xffff&((u>>2)^(copiau<<14));
+		uint64_t corridov=0xffff&((v>>12)^(copiav<<4));
+		key=key>>32;
+		uint64_t dosa1=key2&0xffffffff;
+		dosa1=dosa1<<32;
+		key=key^dosa1;
+		key2=key2>>32;
+		key2^=(corridou<<48)^(corridov<<32);
+	}
+
+}
+int genTwek(unsigned char twe, uint64_t * tweA){
+		uint64_t mas=0x01;
 	uint64_t tweF=0;
-	uint64_t tweA=0;
+	//uint64_t tweA=0;
 	unsigned char twe0=0x01&twe;
 	unsigned char twe1=(0x02&twe)>>1;
-	unsigned char twe2=(0x03&twe)>>2;
+	unsigned char twe2=(0x04&twe)>>2;
 	unsigned char twe3=(0x08&twe)>>3;
 	unsigned char twex=twe0^twe1^twe2^twe3;
 	unsigned char twese=0;
 	uint64_t au=0;
 	twese=twe;
-	//printf("%016llx \n",twese );
 	twese^=(twex^twe0)<<4;
 	twese^=(twex^twe1)<<5;
 	twese^=(twex^twe2)<<6;
 	twese^=(twex^twe3)<<7;
-	//printf("%016llx \n",twe1 );
-	//printf("twe %016llx\n",twese );
+	for (int i = 0; i < 2; ++i)
+	{
+		tweF^=twese<<(i*8);
+	}
+	printf("%016llx \n",tweF );
+	for (int i = 0; i < 15; ++i)
+	{
+		au=(tweF&mas)>>i;
+		*tweA^=au<<((4*i)+2);
+		mas=mas<<1;
+	}
+	printf("%016llx twe\n", *tweA );
+}
+int main(int argc, char const *argv[])
+{	
+	uint64_t tweA=0;
+	genTwek(twe, &tweA);
+	/*
+	uint64_t mas=0x01;
+	uint64_t tweF=0;
+	uint64_t tweA=0;
+	unsigned char twe0=0x01&twe;
+	unsigned char twe1=(0x02&twe)>>1;
+	unsigned char twe2=(0x04&twe)>>2;
+	unsigned char twe3=(0x08&twe)>>3;
+	unsigned char twex=twe0^twe1^twe2^twe3;
+	unsigned char twese=0;
+	uint64_t au=0;
+	twese=twe;
+	twese^=(twex^twe0)<<4;
+	twese^=(twex^twe1)<<5;
+	twese^=(twex^twe2)<<6;
+	twese^=(twex^twe3)<<7;
 	for (int i = 0; i < 2; ++i)
 	{
 		tweF^=twese<<(i*8);
@@ -453,98 +513,31 @@ int main(int argc, char const *argv[])
 		au=(tweF&mas)>>i;
 		tweA^=au<<((4*i)+2);
 		mas=mas<<1;
-	}
-	//printf("twe salida %016llx \n", tweA );
+	}*/
 	uint64_t Keys[28];
 
 	int i=0;
+
+	//Generacion de llaves
+	genKey(key, key2, Keys);
+	/*
 	for (int i = 0; i < 28; ++i)
 	{
-		//printf("llave original%016llx\n", key);
 		uint32_t cacho=0xffffffff & key;
-		//printf("cacho: %016llx \n", cacho );
 		Keys[i]=xorData(&cacho,constantes[i]);/////
 		uint32_t u32=(0xffff0000 & (cacho));
 		uint16_t u=u32>>16; uint16_t copiau=u;
 		uint16_t v=0x0000ffff & (cacho); uint16_t copiav=v;
 		uint64_t corridou=0xffff&((u>>2)^(copiau<<14));
 		uint64_t corridov=0xffff&((v>>12)^(copiav<<4));
-		//printf("%016llx \n", key>>32 );
-		//corridou=corridou<<48;
-		//printf("%016llx \n", corridov );
-
-		//key=(key>>32)^(corridou<<48)^(corridov<<32);
 		key=key>>32;
 		uint64_t dosa1=key2&0xffffffff;
 		dosa1=dosa1<<32;
-		//printf("Key 2 a anexa %016llx \n",dosa1 );
 		key=key^dosa1;
 		key2=key2>>32;
 		key2^=(corridou<<48)^(corridov<<32);
-		//printf("key salida %016llx \n",key);
-		//printf("key2 salida %016llx \n", key2 );
-		//p//rintf("llave creada: %d %016llx \n",i,Keys[i] );
-		//printf("\n");
-
-	}
-
-
-
-	/*
-	printf("prueba permutacion\n");
-	textoplano=permutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	textoplano=despermutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	printf("\n");
-	printf("prueba permutacion\n");
-	textoplano=permutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	textoplano=despermutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	printf("\n");
-
-
-
-	printf("prueba GS\n");
-	textoplano=GSx(&textoplano);
-	printf("%016llx\n", textoplano );
-	textoplano=GSxinv(&textoplano);
-	printf("%016llx\n", textoplano );
-	printf("\n");
-	printf("prueba keys\n");
-	textoplano=textoplano^Keys[0];
-	printf("%016llx\n", textoplano );
-	textoplano=textoplano^Keys[0];
-	printf("%016llx\n", textoplano );
-	printf("\n");
-	printf("prueba permutacion\n");
-	textoplano=permutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	textoplano=despermutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	printf("\n");
-	printf("prueba GS\n");
-	textoplano=GSx(&textoplano);
-	printf("%016llx\n", textoplano );
-	textoplano=GSxinv(&textoplano);
-	printf("%016llx\n", textoplano );
-	printf("\n");
-	printf("prueba keys\n");
-	textoplano=textoplano^Keys[0];
-	printf("%016llx\n", textoplano );
-	textoplano=textoplano^Keys[0];
-	printf("%016llx\n", textoplano );
-	printf("\n");
-	printf("prueba permutacion\n");
-	textoplano=permutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	textoplano=despermutacion(&textoplano);
-	printf("%016llx\n", textoplano );
-	printf("\n");
-	*/
-
-	
+	}*/
+	//cifrado
 	for (int i = 0; i < 28; ++i)
 	{
 		//printf("texto plano: %016llx\n", textoplano );
@@ -568,11 +561,9 @@ int main(int argc, char const *argv[])
 	printf("\n");
 	printf("texto Cifrado: %016llx \n",textoplano);
 	printf("\n");
-/*
+	//Descifrado
 	for (int i =27 ; i>=0; --i)
 	{
-		//printf("%017llx \n", Keys[i-1] );
-		//printf("%d\n",i-1 );
 		if (i!=27 && ((i+1)%4==0))
 		{
 			printf("%d\n",i );
@@ -588,47 +579,6 @@ int main(int argc, char const *argv[])
 	}
 	printf("\n");
 	printf("texto descifrado: %016llx \n",textoplano );
-
-	*/
-
 	printf("\n" );
-	//imprimeCadena(plainText);
-	//imprimeCadenaHex(cadena);
-	//unsigned char ar=0xa>>4;
-	///printf("%x\n",ar );
-	//printf("%d\n", sizeof(uint64_t) );
-	//printf("%d\n", sizeof(char));
-	//printf("Key: %032lln \n",key );
-
-	/*
-
-
-	uint64_t salidapermutacion=permutacion(&textoplano);
-	printf("permutacion: %016llx\n", salidapermutacion );
-	uint64_t salidaPermutacionInversa=despermutacion(&salidapermutacion);
-	printf("salidaPermutacionInversa: %016llx\n", salidaPermutacionInversa);
-	printf("\n");
-	*/
-	
-	//printf("permutacionin: %"PRIx64"\n",despermutacion(&textoplano) );
-	//imprimeCadenaHex(plainText);
-	//(*plainText+0)^(0x1);
-	//imprimeCadenaHex(plainText);
-	//(*plainText+0)|(0x1);
-	//imprimeCadenaHex(plainText);
-	//printf("%x\n",plainText[0] );
-	//printf("%x\n",(*plainText+0) & (0x0<<3));
-	//printf("%x\n",(0x4<<4)^0x1);
-	//GS(plainText);
-	//imprimeCadena(plainText);
-	//pruebaregresaNumero();
-	//printf("%d\n",sizeof(plainText) );
 	return 0;
 }
-
-
-
-//juan.perezmar@issste.gob.mx
-//3233440431112222
-//3233440431012222
-
