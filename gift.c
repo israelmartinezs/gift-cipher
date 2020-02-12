@@ -454,7 +454,8 @@ int genKey(uint64_t key, uint64_t key2, uint64_t * Keys){
 	}
 
 }
-int genTwek(unsigned char twe, uint64_t * tweA){
+int genTwek(unsigned char twe, uint64_t * tweA)
+{
 		uint64_t mas=0x01;
 	uint64_t tweF=0;
 	//uint64_t tweA=0;
@@ -474,111 +475,70 @@ int genTwek(unsigned char twe, uint64_t * tweA){
 	{
 		tweF^=twese<<(i*8);
 	}
-	printf("%016llx \n",tweF );
+	//printf("%016llx \n",tweF );
 	for (int i = 0; i < 15; ++i)
 	{
 		au=(tweF&mas)>>i;
 		*tweA^=au<<((4*i)+2);
 		mas=mas<<1;
 	}
-	printf("%016llx twe\n", *tweA );
+	//printf("%016llx twe\n", *tweA );
 }
-int main(int argc, char const *argv[])
-{	
-	uint64_t tweA=0;
-	genTwek(twe, &tweA);
-	/*
-	uint64_t mas=0x01;
-	uint64_t tweF=0;
-	uint64_t tweA=0;
-	unsigned char twe0=0x01&twe;
-	unsigned char twe1=(0x02&twe)>>1;
-	unsigned char twe2=(0x04&twe)>>2;
-	unsigned char twe3=(0x08&twe)>>3;
-	unsigned char twex=twe0^twe1^twe2^twe3;
-	unsigned char twese=0;
-	uint64_t au=0;
-	twese=twe;
-	twese^=(twex^twe0)<<4;
-	twese^=(twex^twe1)<<5;
-	twese^=(twex^twe2)<<6;
-	twese^=(twex^twe3)<<7;
-	for (int i = 0; i < 2; ++i)
-	{
-		tweF^=twese<<(i*8);
-	}
-	printf("%016llx \n",tweF );
-	for (int i = 0; i < 15; ++i)
-	{
-		au=(tweF&mas)>>i;
-		tweA^=au<<((4*i)+2);
-		mas=mas<<1;
-	}*/
-	uint64_t Keys[28];
-
-	int i=0;
-
-	//Generacion de llaves
-	genKey(key, key2, Keys);
-	/*
+int cifrar(uint64_t twek, uint64_t *textoplano,uint64_t *textocifrado, uint64_t * Keys){
+	uint64_t salida=0;
 	for (int i = 0; i < 28; ++i)
 	{
-		uint32_t cacho=0xffffffff & key;
-		Keys[i]=xorData(&cacho,constantes[i]);/////
-		uint32_t u32=(0xffff0000 & (cacho));
-		uint16_t u=u32>>16; uint16_t copiau=u;
-		uint16_t v=0x0000ffff & (cacho); uint16_t copiav=v;
-		uint64_t corridou=0xffff&((u>>2)^(copiau<<14));
-		uint64_t corridov=0xffff&((v>>12)^(copiav<<4));
-		key=key>>32;
-		uint64_t dosa1=key2&0xffffffff;
-		dosa1=dosa1<<32;
-		key=key^dosa1;
-		key2=key2>>32;
-		key2^=(corridou<<48)^(corridov<<32);
-	}*/
-	//cifrado
-	for (int i = 0; i < 28; ++i)
-	{
-		//printf("texto plano: %016llx\n", textoplano );
-		textoplano=GSx(&textoplano);
-		printf("texto GS %016llx\n",textoplano );
-		uint64_t salidapermutacion=permutacion(&textoplano);
-		printf("permutacion: %016llx\n", salidapermutacion );
-		//uint64_t salidaPermutacionInversa=despermutacion(&salidapermutacion);
-		//printf("salidaPermutacionInversa: %016llx\n", salidaPermutacionInversa);
-		textoplano=salidapermutacion^Keys[i];
+	
+		salida=GSx(textoplano);
+		salida=permutacion(&salida);
+		*textocifrado=salida^Keys[i];
 		if (((i+1)%4)==0 && i!=27)
 		{
-			printf("%d\n",i );
-			textoplano=textoplano^tweA;
+			//printf("%d\n",i );
+			*textocifrado=*textocifrado^twek;
 		}
-		printf("cifrado %016llx \n",textoplano );
-		printf("llave: %016llx \n", Keys[i]);
-		printf("\n");
-		printf("texto Cifrado: %016llx \n",textoplano);
 	}
-	printf("\n");
-	printf("texto Cifrado: %016llx \n",textoplano);
-	printf("\n");
-	//Descifrado
+}
+int descifrar(uint64_t twek, uint64_t *textoplano,uint64_t *textocifrado, uint64_t * Keys){
 	for (int i =27 ; i>=0; --i)
 	{
 		if (i!=27 && ((i+1)%4==0))
 		{
-			printf("%d\n",i );
-			textoplano=textoplano^tweA;
+			//printf("%d\n",i );
+			*textoplano=*textoplano^twek;
 		}
-		textoplano=textoplano^Keys[i];
-		printf("cifrado %016llx \n",textoplano );
-		textoplano=despermutacion(&textoplano);
-		printf("permutacion %016llx \n", textoplano );
-		textoplano=GSxinv(&textoplano);
+		*textoplano=*textoplano^Keys[i];
+		//printf("cifrado %016llx \n",textoplano );
+		*textoplano=despermutacion(textoplano);
+		//printf("permutacion %016llx \n", textoplano );
+		*textoplano=GSxinv(textoplano);
 		
-		printf("texto GS %016llx\n",textoplano );
+		//printf("texto GS %016llx\n",textoplano );
 	}
-	printf("\n");
-	printf("texto descifrado: %016llx \n",textoplano );
-	printf("\n" );
-	return 0;
 }
+int Ek(unsigned char twek, uint64_t key1, uint64_t key2, uint64_t textoplano, uint64_t * textocifrado){
+	uint64_t tweA=0;
+	genTwek(twek,&tweA);
+	uint64_t Keys[28];
+	genKey(key1,key2,Keys);
+	cifrar(tweA, &textoplano, textocifrado, Keys);
+	//descifrar(tweA,&textocifrado,&textoplano,Keys);
+	/*
+	printf("texto Cifrado: %016llx \n",*textocifrado);
+	descifrar(tweA,textocifrado,&textoplano,Keys);
+	printf("texto descifrado: %016llx \n",textoplano );
+	*/
+}
+
+int main(int argc, char const *argv[])
+{	
+	uint64_t textocifrado=0;
+	Ek(0x04,key,key2,textoplano, &textocifrado);
+	printf("texto Cifrado: %016llx \n",textocifrado);
+	/*
+	printf("texto Cifrado: %016llx \n",textocifrado);
+	descifrar(tweA,&textocifrado,&textoplano,Keys);
+	printf("texto descifrado: %016llx \n",textoplano );
+	*/
+}
+
