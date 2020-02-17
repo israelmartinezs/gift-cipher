@@ -529,7 +529,7 @@ int Ek(unsigned char twek, uint64_t key1, uint64_t key2, uint64_t textoplano, ui
 	printf("texto descifrado: %016llx \n",textoplano );
 	*/
 }
-
+/*
 int main(int argc, char const *argv[])
 {	
 	uint64_t textocifrado=0;
@@ -539,6 +539,6 @@ int main(int argc, char const *argv[])
 	printf("texto Cifrado: %016llx \n",textocifrado);
 	descifrar(tweA,&textocifrado,&textoplano,Keys);
 	printf("texto descifrado: %016llx \n",textoplano );
-	*/
-}
+	*//*/
+}*/
 
