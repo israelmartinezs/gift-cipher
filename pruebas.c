@@ -32,17 +32,72 @@ int crypto_aead_encrypt(
 	uint64_t kn2=0;
 	uint64_t n64p1=0;
 	uint64_t n64p2=0;
+
 	uint64_t deltan=0;
+	//int div=numeroadlen?numeroadlen:(numeroadlen+1);
+	uint64_t  * Key=(uint64_t *)k;
+	uint64_t * npub64=(uint64_t *)npub; 
+	//printf("%016llx \n", );
+	printf("llave orignal 1 %016llx \n", Key[0] );
+	printf("llave orignal 2 %016llx \n", Key[1] );
+	printf("deltan %016llx \n", deltan);
+	printf("vxor %016llx \n", vxor);
 	//generar la llaves en 64 bits
-	genKeyFromChar(k,&kn1,&kn2);
+	//genKeyFromChar(k,&kn1,&kn2);
 	//generar nounce
-	genKeyFromChar(npub,&n64p1,&n64p2);
+	//genKeyFromChar(npub,&n64p1,&n64p2);
 	//init
-	init(kn1, kn2, n64p1, n64p2, &kn1, &kn2, &deltan);
+	//init(kn1, kn2, n64p1, n64p2, &kn1, &kn2, &deltan);
+	printf("\n");
+	printf("init\n");
+	init(Key[0], Key[1], npub64[0], npub64[1], &kn1, &kn2, &deltan);
+	printf("llave  1 %016llx \n", kn1 );
+	printf("llave  2 %016llx \n", kn2 );
 	printf("Deltan %016llx\n",deltan );
 	//si tiene AD
+	printf("\n");
+	printf("AD\n");
+	if (adlen!=0)
+	{
+		uint64_t * add=(uint64_t *)ad;
+		proc_ad(&kn1,&kn2,&deltan,&vxor,add,adlen/8,adlen%8);
+	}
+	printf("llave  1 %016llx \n", kn1 );
+	printf("llave  2 %016llx \n", kn2 );
+	printf("vxor %016llx \n", vxor);
 
 }
+int proc_ad(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *vxor, uint64_t * ad, int bloques, int sobrante){
+	uint64_t x,v;
+	for (int i = 0; i < bloques; ++i)
+	{
+		x=ad[i]^*deltan;
+		//multipicacion por dos
+		Ek(0x2,*kn1,*kn2,x,&v);
+		*vxor^=v;
+
+	}
+	
+		uint64_t paddig=0;
+		paddig=sobrante!=0?0x1:0x0;
+		uint64_t salida=0;
+		uint64_t llenado=0xffffffffffffffff;
+		//uint64_t * cad=(uint64_t *)caden;
+		salida=((llenado>>(((8-sobrante)*8)))&(ad[bloques]))^(paddig<<(sobrante*8));
+	x=salida^*deltan;
+	//multiplicacion por dos
+	if (sobrante!=0)
+	{
+		Ek(0x3,*kn1,*kn2,x,&v);
+	}
+	else{
+		Ek(0x2,*kn1,*kn2,x,&v);
+	}
+	*vxor^=v;
+
+	
+}
+
 int init(uint64_t key1,uint64_t key2, uint64_t npub1, uint64_t npub2, uint64_t * kn1, uint64_t * kn2, uint64_t *deltan){
 	uint64_t y=0;
 	Ek(0x00, key1, key2, 0x0,&y);
@@ -66,9 +121,7 @@ int genKeyFromChar(unsigned char * k, uint64_t * key1, uint64_t * key2){
 		}
 		*/
 }
-int proc_ad(){
 
-}
 uint64_t * char264bytes(char * datos, int datoslen, uint64_t * datossalida){
 	printf("%s\n",datos );
 	int bitsUsados=0;
