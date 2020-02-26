@@ -65,8 +65,58 @@ int crypto_aead_encrypt(
 	printf("llave  1 %016llx \n", kn1 );
 	printf("llave  2 %016llx \n", kn2 );
 	printf("vxor %016llx \n", vxor);
+	if (ptlen!=0)
+	{
+		uint64_t *ptext=(uint64_t *)pt;
+
+	}
 
 }
+int proc_pt(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *wxor, uint64_t * pt,uint64_t **cipherText, int bloques, int sobrante, int messageLen){
+	
+	int numeroBloques=(int)bloques+ceil((double)sobrante/64);
+	int d=(int)ceil((double)numeroBloques/2);
+	int j=0;
+	uint64_t x1=0;
+	uint64_t x2=0;
+	uint64_t y1=0;
+	uint64_t y2=0;
+	uint64_t w1=0;
+	uint64_t w2=0;
+	for (int i = 0; i <= d-2; ++i)////
+	{
+		j=2*i;
+		x1=pt[j]^*deltan;
+		//mutiplicacion por dos
+		Ek(0x4,kn1,kn2,x1,&w1);
+		Ek(0x4,kn1,kn2,w1,&y1);
+		x2=y1^pt[j+1];
+		Ek(0x5,kn1,kn2,x2,&w2);
+		Ek(0x5,kn1,kn2,w2,&y2);
+		*wxor^=w1^w2;
+		*cipherText[j]=x2^*deltan;
+		*cipherText[j+1]=x1^*y2;
+	}
+	x1=(messageLen*8-2*(d-1)*64)^deltan;//mesage len en bits
+	//multiplicacion por dos
+	Ek(0x12,kn1,kn2,x1,&w1);
+	Ek(0x12,kn1,kn2,w1,&y1);
+	x2=y1^pt[(2*d)-2];
+	//*cipherText[(2*d)-2]=chop(x2^deltan,
+	*wxor^=w1;
+	if (2*d== numeroBloques)
+	{
+		Ek(0x13,kn1,kn2,x2,&w2);
+		wxor^=w2;
+		Ek(0x13,kn1,kn2,w2,&y2);
+		//chop
+
+	}
+	wxor^=pt[numeroBloques-1];
+
+
+}
+
 int proc_ad(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *vxor, uint64_t * ad, int bloques, int sobrante){
 	uint64_t x,v;
 	for (int i = 0; i < bloques; ++i)
