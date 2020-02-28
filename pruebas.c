@@ -73,7 +73,7 @@ int crypto_aead_encrypt(
 
 }
 int proc_pt(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *wxor, uint64_t * pt,uint64_t **cipherText, int bloques, int sobrante, int messageLen){
-	
+	int sobra=ceil((double)sobrante/64;
 	int numeroBloques=(int)bloques+ceil((double)sobrante/64);
 	int d=(int)ceil((double)numeroBloques/2);
 	int j=0;
@@ -103,6 +103,7 @@ int proc_pt(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *wxor, uint
 	Ek(0x12,kn1,kn2,w1,&y1);
 	x2=y1^pt[(2*d)-2];
 	//*cipherText[(2*d)-2]=chop(x2^deltan,
+	chop(x2^deltan,*cipherText[(2*d)-2],sobrante*8);
 	*wxor^=w1;
 	if (2*d== numeroBloques)
 	{
@@ -110,6 +111,7 @@ int proc_pt(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *wxor, uint
 		wxor^=w2;
 		Ek(0x13,kn1,kn2,w2,&y2);
 		//chop
+		chop(x2^deltan,*cipherText[(2*d)-1],sobrante*8);
 
 	}
 	wxor^=pt[numeroBloques-1];
@@ -122,7 +124,7 @@ int proc_ad(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *vxor, uint
 	for (int i = 0; i < bloques; ++i)
 	{
 		x=ad[i]^*deltan;
-		//multipicacion por dos
+		multby2(kn1,kn2);
 		Ek(0x2,*kn1,*kn2,x,&v);
 		*vxor^=v;
 
@@ -136,6 +138,7 @@ int proc_ad(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *vxor, uint
 		salida=((llenado>>(((8-sobrante)*8)))&(ad[bloques]))^(paddig<<(sobrante*8));
 	x=salida^*deltan;
 	//multiplicacion por dos
+	multby2(kn1,kn2);
 	if (sobrante!=0)
 	{
 		Ek(0x3,*kn1,*kn2,x,&v);
@@ -147,7 +150,20 @@ int proc_ad(uint64_t *kn1, uint64_t *kn2, uint64_t *deltan, uint64_t *vxor, uint
 
 	
 }
+int multby2(uint64_t *key1,uint64_t *key2){
+	uint64_t aux=((0x1<<63)&(*key2))>>63;
+	*key2=*key2<<1;
+	*key2^=((0x1<<63)&(*key1))>>63;
+	*key1=*key1<<63;
+	*key1^=(aux*0x87);
 
+
+}
+int chop(uint64_t orginal,uint64_t *bloque, int n){
+	uint64_t aux=0xffffffffffffffff;
+	aux=aux>>(64-n);
+	*bloque=orginal&aux;
+}
 int init(uint64_t key1,uint64_t key2, uint64_t npub1, uint64_t npub2, uint64_t * kn1, uint64_t * kn2, uint64_t *deltan){
 	uint64_t y=0;
 	Ek(0x00, key1, key2, 0x0,&y);
